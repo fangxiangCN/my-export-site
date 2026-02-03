@@ -1,65 +1,83 @@
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
+import Link from "next/link";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
-export default function Home() {
+interface Product {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  mainImage: SanityImageSource;
+  categorySlug: string; // 修正类型
+}
+
+async function getProducts() {
+  // 获取最新产品，包含分类 slug
+  const query = `*[_type == "product"] | order(_createdAt desc) [0...8] {
+    _id,
+    title,
+    slug,
+    mainImage,
+    "categorySlug": categories[0]->slug.current
+  }`;
+  return client.fetch<Product[]>(query, {}, { next: { revalidate: 60 } });
+}
+
+export default async function Home() {
+  const products = await getProducts();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main>
+      {/* Banner */}
+      <section className="bg-slate-900 text-white py-24 px-4 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          Advanced Rice Milling Solutions
+        </h1>
+        <p className="text-gray-300 mb-8 max-w-2xl mx-auto text-lg">
+          Complete commercial plants & compact combined mills for modern
+          agriculture.
+        </p>
+        <Link
+          href="/products/commercial-rice-mill" // 引导去其中一个分类
+          className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-full transition"
+        >
+          View All Products
+        </Link>
+      </section>
+
+      {/* Featured Products */}
+      <div className="container mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+          Featured Machinery
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <Link
+              href={`/products/${product.categorySlug}/${product.slug.current}`}
+              key={product._id}
+              className="group bg-white rounded-lg shadow-sm hover:shadow-xl transition overflow-hidden border border-gray-100"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <div className="relative h-56 w-full bg-gray-50">
+                {product.mainImage && (
+                  <Image
+                    src={urlFor(product.mainImage).width(400).height(400).url()}
+                    alt={product.title}
+                    fill
+                    className="object-contain p-4 group-hover:scale-105 transition duration-500"
+                  />
+                )}
+              </div>
+              <div className="p-4 border-t border-gray-100">
+                <h3 className="font-semibold text-gray-900 group-hover:text-orange-600 truncate">
+                  {product.title}
+                </h3>
+              </div>
+            </Link>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
