@@ -100,6 +100,9 @@ async function main() {
   const img1_body = await uploadImage(
     "https://placehold.co/1200x800/0ea5e9/white?text=CTNM15B+In+Use",
   );
+  const img1_body2 = await uploadImage(
+    "https://placehold.co/1200x800/14b8a6/white?text=CTNM15B+Detail+Shot",
+  );
 
   // 产品2的图片组
   const img2_thumb = await uploadImage(
@@ -128,6 +131,9 @@ async function main() {
   );
   const img2_body = await uploadImage(
     "https://placehold.co/1200x800/22d3ee/white?text=100TPD+Plant+Site",
+  );
+  const img2_body2 = await uploadImage(
+    "https://placehold.co/1200x800/0f766e/white?text=Automation+Control+Room",
   );
 
   // --- 3. 创建产品 ---
@@ -321,6 +327,37 @@ async function main() {
         _type: "image",
         asset: { _type: "reference", _ref: img1_body },
       },
+      {
+        _key: "b14",
+        _type: "block",
+        children: [
+          {
+            _key: "c14",
+            _type: "span",
+            text: "Flexible installation layouts support both single-phase and three-phase power setups.",
+            marks: ["em"],
+          },
+        ],
+        style: "normal",
+      },
+      {
+        _key: "b15",
+        _type: "block",
+        children: [
+          {
+            _key: "c15",
+            _type: "span",
+            text: "Recommended accessories include dust collection and lightweight packing scales.",
+            marks: ["strong"],
+          },
+        ],
+        style: "normal",
+      },
+      {
+        _key: "b16",
+        _type: "image",
+        asset: { _type: "reference", _ref: img1_body2 },
+      },
     ],
   });
   console.log("✅ 产品 1 (CTNM15B) 创建完成");
@@ -497,6 +534,36 @@ async function main() {
         _key: "b11",
         _type: "image",
         asset: { _type: "reference", _ref: img2_body },
+      },
+      {
+        _key: "b12",
+        _type: "block",
+        children: [
+          {
+            _key: "c12",
+            _type: "span",
+            text: "Centralized HMI panels simplify operator training and improve shift handover efficiency.",
+          },
+        ],
+        style: "normal",
+      },
+      {
+        _key: "b13",
+        _type: "block",
+        children: [
+          {
+            _key: "c13",
+            _type: "span",
+            text: "Optional monitoring modules provide remote alerts and batch traceability.",
+            marks: ["strong"],
+          },
+        ],
+        style: "normal",
+      },
+      {
+        _key: "b14",
+        _type: "image",
+        asset: { _type: "reference", _ref: img2_body2 },
       },
     ],
   });
