@@ -26,7 +26,7 @@ export default function ProductDetailTabs({ parameterGroups, body }: Props) {
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
             <Image
               src={urlFor(value).width(1200).height(900).url()}
-              alt={value?.alt ?? "Product detail image"}
+              alt="Product detail image"
               fill
               className="object-cover"
             />
